@@ -35,6 +35,7 @@ Future<void> init() async {
             remoteDataSource: sl(),
             localDataSource: sl(),
             networkInfo: sl(),
+            inputConverter: sl(),
           ));
 
   //Data

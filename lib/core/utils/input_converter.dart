@@ -1,17 +1,7 @@
-import 'package:dartz/dartz.dart';
-
-import 'package:clean_architecture/core/errors/failures.dart';
-
 class InputConverter {
-  Either<Failure, int> stringToUnsignedInteger(String str) {
-    try {
-      final integer = int.parse(str);
-      if (integer < 0) throw const FormatException();
-      return Right(int.parse(str));
-    } on FormatException {
-      return Left(InvalidInputFailure());
-    }
+  Future<int> stringToUnsignedInteger(String str) async {
+    final integer = int.parse(str);
+    if (integer < 0) throw const FormatException();
+    return Future.value(int.parse(str));
   }
 }
-
-class InvalidInputFailure extends Failure {}

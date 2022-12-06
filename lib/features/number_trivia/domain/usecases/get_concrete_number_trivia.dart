@@ -18,7 +18,7 @@ class GetConcreteNumberTrivia implements UseCase<NumberTrivia, Params> {
 }
 
 class Params extends Equatable {
-  final int number;
+  final String number;
 
   const Params({required this.number});
 
