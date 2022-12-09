@@ -18,7 +18,7 @@ class NumberTriviaScreen extends StatelessWidget {
         title: const Text('Number Trivia'),
         centerTitle: false,
       ),
-      body: const BuildBody(),
+      body: const SingleChildScrollView(child: BuildBody()),
     );
   }
 }

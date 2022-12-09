@@ -14,25 +14,27 @@ void main() {
   late GetConcreteNumberTrivia usecase;
   late MockNumberTriviaRepository mockNumberTriviaRepository;
   late int tNumber;
+  late String tNumberString;
   late NumberTrivia tNumberTrivia;
 
   setUp(() {
     mockNumberTriviaRepository = MockNumberTriviaRepository();
     usecase = GetConcreteNumberTrivia(repository: mockNumberTriviaRepository);
     tNumber = 1;
+    tNumberString = '1';
     tNumberTrivia = NumberTrivia(number: tNumber, text: 'test');
   });
 
   test('should get number trivia from the repository', () async {
     // "On the fly" implementation of the Repository using the Mockito package.
     //arange
-    when(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber))
+    when(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumberString))
         .thenAnswer((_) async => Right(tNumberTrivia));
     // The "act" phase of the test. Call the not-yet-existent method.
-    final result = await usecase(Params(number: tNumber));
+    final result = await usecase(Params(number: tNumberString));
     //assert
     expect(result, equals(Right(tNumberTrivia)));
-    verify(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
+    verify(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumberString));
     verifyNoMoreInteractions(mockNumberTriviaRepository);
   });
 }

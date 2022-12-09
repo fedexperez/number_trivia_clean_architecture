@@ -49,7 +49,7 @@ void main() {
 
     void setUpMockInputConverterSuccess() {
       when(mockInputConverter.stringToUnsignedInteger(tNumberString))
-          .thenReturn(const Right(tNumberParsed));
+          .thenReturn(Future.value(tNumberParsed));
     }
 
     test(
@@ -72,8 +72,8 @@ void main() {
       'should emit [ErrorState] when the input is invalid',
       () async* {
         //arrange
-        when(mockInputConverter.stringToUnsignedInteger(tNumberString))
-            .thenReturn(Left(InvalidInputFailure()));
+        when(mockInputConverter.stringToUnsignedInteger(any))
+            .thenThrow(const FormatException());
         //assert later
         final List<NumberTriviaState> expected = [
           NumberTriviaInitialState(),
@@ -90,18 +90,19 @@ void main() {
       'should get data from the concrete use case',
       () async {
         //arrange
-        setUpMockInputConverterSuccess();
-        when(mockGetConcreteNumberTrivia(const Params(number: tNumberParsed)))
+        when(mockInputConverter.stringToUnsignedInteger(tNumberString))
+            .thenAnswer((_) async => Future.value(tNumberParsed));
+        when(mockGetConcreteNumberTrivia(const Params(number: tNumberString)))
             .thenAnswer((_) async => const Right(tNumberTrivia));
         //act
         numberTriviaBloc.add(
             const GetTriviaForConcreteNumberEvent(numberString: tNumberString));
         await untilCalled(
-          mockGetConcreteNumberTrivia(const Params(number: tNumberParsed)),
+          mockGetConcreteNumberTrivia(const Params(number: tNumberString)),
         );
         //assert
         verify(
-            mockGetConcreteNumberTrivia(const Params(number: tNumberParsed)));
+            mockGetConcreteNumberTrivia(const Params(number: tNumberString)));
       },
     );
 
@@ -110,7 +111,7 @@ void main() {
       () async* {
         //arrange
         setUpMockInputConverterSuccess();
-        when(mockGetConcreteNumberTrivia(const Params(number: tNumberParsed)))
+        when(mockGetConcreteNumberTrivia(const Params(number: tNumberString)))
             .thenAnswer((_) async => const Right(tNumberTrivia));
         //assert later
         final List<NumberTriviaState> expected = [
@@ -130,7 +131,7 @@ void main() {
       () async* {
         //arrange
         setUpMockInputConverterSuccess();
-        when(mockGetConcreteNumberTrivia(const Params(number: tNumberParsed)))
+        when(mockGetConcreteNumberTrivia(const Params(number: tNumberString)))
             .thenAnswer((_) async => Left(ServerFailure()));
         //assert later
         final List<NumberTriviaState> expected = [

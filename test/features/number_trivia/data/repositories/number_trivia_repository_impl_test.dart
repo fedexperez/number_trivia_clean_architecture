@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:clean_architecture/core/utils/input_converter.dart';
 import 'package:clean_architecture/core/errors/exceptions.dart';
 import 'package:clean_architecture/core/errors/failures.dart';
 import 'package:clean_architecture/core/network/network_info.dart';
@@ -27,8 +28,10 @@ void main() {
   late BaseMockNumberTriviaRemoteDataSource mockRemoteDataSource;
   late MockNumberTriviaLocalDataSource mockLocalDataSource;
   late MockNetworkInfo mockNetworkInfo;
+  late InputConverter inputConverter;
 
   late int tNumber;
+  late String tNumberString;
   late NumberTriviaModel tNumberTriviaModel;
   late NumberTrivia tNumberTrivia;
 
@@ -36,12 +39,16 @@ void main() {
     mockRemoteDataSource = BaseMockNumberTriviaRemoteDataSource();
     mockLocalDataSource = MockNumberTriviaLocalDataSource();
     mockNetworkInfo = MockNetworkInfo();
+    inputConverter = InputConverter();
     repository = NumberTriviaRepositoryImpl(
-        localDataSource: mockLocalDataSource,
-        remoteDataSource: mockRemoteDataSource,
-        networkInfo: mockNetworkInfo);
+      localDataSource: mockLocalDataSource,
+      remoteDataSource: mockRemoteDataSource,
+      networkInfo: mockNetworkInfo,
+      inputConverter: inputConverter,
+    );
 
     tNumber = 1;
+    tNumberString = '1';
     tNumberTriviaModel =
         NumberTriviaModel(textm: 'Test Text', numberm: tNumber);
     tNumberTrivia = tNumberTriviaModel;
@@ -60,7 +67,7 @@ void main() {
         //arrange
         when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
         //act
-        repository.getConcreteNumberTrivia(tNumber);
+        repository.getConcreteNumberTrivia(tNumberString);
         //assert
         verify(mockNetworkInfo.isConnected);
       },
@@ -78,7 +85,8 @@ void main() {
           when(mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
               .thenAnswer((_) async => tNumberTriviaModel);
           //act
-          final result = await repository.getConcreteNumberTrivia(tNumber);
+          final result =
+              await repository.getConcreteNumberTrivia(tNumberString);
           //assert
           verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
           expect(result, equals(Right(tNumberTrivia)));
@@ -92,7 +100,7 @@ void main() {
           when(mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
               .thenAnswer((_) async => tNumberTriviaModel);
           //act
-          await repository.getConcreteNumberTrivia(tNumber);
+          await repository.getConcreteNumberTrivia(tNumberString);
           //assert
           verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
           verify(mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel));
@@ -106,7 +114,8 @@ void main() {
           when(mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
               .thenThrow(ServerException());
           //act
-          final result = await repository.getConcreteNumberTrivia(tNumber);
+          final result =
+              await repository.getConcreteNumberTrivia(tNumberString);
           //assert
           verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
           verifyZeroInteractions(mockLocalDataSource);
@@ -127,7 +136,8 @@ void main() {
           when(mockLocalDataSource.getLastNumberTrivia())
               .thenAnswer((_) async => tNumberTriviaModel);
           //act
-          final result = await repository.getConcreteNumberTrivia(tNumber);
+          final result =
+              await repository.getConcreteNumberTrivia(tNumberString);
           //assert
           verifyZeroInteractions(mockRemoteDataSource);
           verify(mockLocalDataSource.getLastNumberTrivia());
@@ -142,7 +152,8 @@ void main() {
           when(mockLocalDataSource.getLastNumberTrivia())
               .thenThrow(CacheException());
           //act
-          final result = await repository.getConcreteNumberTrivia(tNumber);
+          final result =
+              await repository.getConcreteNumberTrivia(tNumberString);
           //assert
           verify(mockLocalDataSource.getLastNumberTrivia());
           verifyZeroInteractions(mockRemoteDataSource);

@@ -1,13 +1,12 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:clean_architecture/core/utils/input_converter.dart';
 
 void main() {
-  late InputConverter inputConverter;
+  late InputConverter baseMockInputConverter;
 
   setUp(() {
-    inputConverter = InputConverter();
+    baseMockInputConverter = InputConverter();
   });
 
   group('stringToUnisgnedInt', () {
@@ -17,21 +16,23 @@ void main() {
         //arrange
         const str = '1';
         //act
-        final result = inputConverter.stringToUnsignedInteger(str);
+        final result =
+            await baseMockInputConverter.stringToUnsignedInteger(str);
         //assert
-        expect(result, const Right(1));
+        expect(result, equals(1));
       },
     );
 
     test(
-      'should return a Failure when the string is not an integer',
+      'should return a Exception when the string is not an integer',
       () async {
         //arrange
         const str = 'abc';
         //act
-        final result = inputConverter.stringToUnsignedInteger(str);
+        final call = baseMockInputConverter.stringToUnsignedInteger;
         //assert
-        expect(result, Left(InvalidInputFailure()));
+        expect(() async => await call(str),
+            throwsA(const TypeMatcher<FormatException>()));
       },
     );
 
@@ -41,9 +42,10 @@ void main() {
         //arrange
         const str = '-12';
         //act
-        final result = inputConverter.stringToUnsignedInteger(str);
+        final call = baseMockInputConverter.stringToUnsignedInteger;
         //assert
-        expect(result, Left(InvalidInputFailure()));
+        expect(() async => await call(str),
+            throwsA(const TypeMatcher<FormatException>()));
       },
     );
   });

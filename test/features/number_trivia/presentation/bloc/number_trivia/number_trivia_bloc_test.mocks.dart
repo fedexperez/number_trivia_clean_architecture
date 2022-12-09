@@ -90,20 +90,13 @@ class MockInputConverter extends _i1.Mock implements _i9.InputConverter {
   }
 
   @override
-  _i3.Either<_i6.Failure, int> stringToUnsignedInteger(String? str) =>
-      (super.noSuchMethod(
+  _i5.Future<int> stringToUnsignedInteger(String? str) => (super.noSuchMethod(
         Invocation.method(
           #stringToUnsignedInteger,
           [str],
         ),
-        returnValue: _FakeEither_1<_i6.Failure, int>(
-          this,
-          Invocation.method(
-            #stringToUnsignedInteger,
-            [str],
-          ),
-        ),
-      ) as _i3.Either<_i6.Failure, int>);
+        returnValue: _i5.Future<int>.value(0),
+      ) as _i5.Future<int>);
 }
 
 /// A class which mocks [GetConcreteNumberTrivia].
